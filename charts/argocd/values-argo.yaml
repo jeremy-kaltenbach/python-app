@@ -1,0 +1,28 @@
+# Local (kind) Argo CD install.
+# SSL is terminated at the ingress and argocd-server runs insecure (plain HTTP),
+# which avoids needing SSL passthrough on ingress-nginx.
+global:
+  domain: argocd.test.com
+
+configs:
+  params:
+    server.insecure: true
+
+redis-ha:
+  enabled: false
+
+controller:
+  replicas: 1
+
+repoServer:
+  replicas: 1
+
+applicationSet:
+  replicas: 1
+
+server:
+  replicas: 1
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    tls: false
