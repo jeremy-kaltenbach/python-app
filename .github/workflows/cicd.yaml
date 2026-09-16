@@ -50,6 +50,7 @@ jobs:
         run : |
           argocd login argocd-server.argocd \
             --insecure \
+            --skip-test-tls
             --grpc-web \
             --username admin \
             --password ${{ secrets.ARGOCD_PASSWORD }}
