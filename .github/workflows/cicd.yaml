@@ -35,10 +35,24 @@ jobs:
         with:
           push: true
           tags: jkaltenbach/python-app:${{ env.SHORT_SHA }}
+    outputs:
+      commit-id: ${{ env.SHORT_SHA }}
   cd:
     needs: ci
     runs-on: self-hosted
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4  
+      - name: Modify Values File
+        shell: bash
+        run: |
+          echo ${{ needs.ci.outputs.commit-id }}
+          pip install yq
+          sudo yq -Yi '.image.tag="${{ needs.ci.outputs.commit-id }}"' charts/python-app/values.yaml
+      - name: Commit Changes
+        uses: Endbug/add-and-commit@v11
+        with:
+          message: 'Updated values.yaml tag with commit ID:${{ needs.ci.outputs.commit-id }}'
       - name: Setup ArgoCD CLI
         shell: bash
         run: |
