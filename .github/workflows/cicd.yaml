@@ -40,6 +40,8 @@ jobs:
   cd:
     needs: ci
     runs-on: self-hosted
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4  
@@ -47,8 +49,9 @@ jobs:
         shell: bash
         run: |
           echo ${{ needs.ci.outputs.commit-id }}
-          pip install yq
-          sudo yq -Yi '.image.tag="${{ needs.ci.outputs.commit-id }}"' charts/python-app/values.yaml
+          curl -fsSL -o yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          chmod +x yq
+          ./yq -i '.image.tag = "${{ needs.ci.outputs.commit-id }}"' charts/python-app/values.yaml
       - name: Commit Changes
         uses: Endbug/add-and-commit@v11
         with:
